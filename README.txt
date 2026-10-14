@@ -75,7 +75,9 @@ It turns style tags and lyrics into full 48 kHz stereo FLAC audio files — runn
 ## 🚀 Installation & Usage
 
 ### 1. Installation
--Run the `.exe` file.
+-Download **`VitusSongs-Setup-0.1.6.exe`** from the (https://github.com/mykytakolenko-alt/VitusSongs--Unlimited-AI-Songs-Generator/releases/tag/v0.1.6) page.
+-Run the `.exe` file from releases and follow the setup wizard.
+-Launch the app and download the required models (~8–10 GB) directly inside the user interface.
 
 > **Manual Installation**:
 1. Unzip the project release into a path **WITHOUT spaces or non-English characters** (e.g., `C:\VitusSongs`). Delete any old `.venv` folders if upgrading.
