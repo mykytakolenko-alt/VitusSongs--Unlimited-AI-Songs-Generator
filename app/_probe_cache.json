@@ -1,0 +1,1 @@
+{"stamp": "1791918248", "t": 1791923926.565666, "data": {"pending": false, "name": "AMD Radeon RX 6600M", "backend": "rocm", "ram_gib": 15.9, "cpu_threads": 16, "torch": "2.16.0a0+rocm10.2.0a20261013", "total_gib": 8.0}}

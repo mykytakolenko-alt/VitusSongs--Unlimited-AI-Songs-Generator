@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VitusSongs — AI songs on your own computer</title>
+<link rel="icon" href="/static/logo.svg" type="image/svg+xml">
+<style>
+:root{
+  --bg:#0b0b14; --panel:#14142199; --panel-solid:#14141f; --line:#2a2a40; --txt:#ecebff; --mut:#9a98b8;
+  --a1:#8b5cf6; --a2:#ec4899; --a3:#22d3ee; --ok:#34d399; --err:#f87171; --warn:#fbbf24;
+  --r:16px;
+}
+*{box-sizing:border-box}
+html{color-scheme:dark}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.5 "Segoe UI",system-ui,sans-serif}
+body{min-height:100vh;background:
+  radial-gradient(900px 500px at 8% -10%,#8b5cf633,transparent 60%),
+  radial-gradient(800px 500px at 100% 0%,#ec489926,transparent 60%),
+  radial-gradient(700px 500px at 50% 110%,#22d3ee1a,transparent 60%),var(--bg)}
+header{display:flex;align-items:center;gap:14px;padding:18px 28px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;background:#0b0b14}
+header img{width:38px;height:38px;border-radius:10px}
+header h1{font-size:19px;margin:0;letter-spacing:.3px}
+header h1 span{background:linear-gradient(90deg,var(--a1),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sp{flex:1}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:99px;color:var(--mut);font-size:13px;background:#ffffff08}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mut)}
+.dot.ok{background:var(--ok);box-shadow:0 0 8px var(--ok)}.dot.err{background:var(--err)}.dot.warn{background:var(--warn)}
+main{max-width:1280px;margin:0 auto;padding:26px 28px 80px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px}
+@media(max-width:980px){main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.card h2{margin:0 0 14px;font-size:15px;text-transform:uppercase;letter-spacing:1.2px;color:var(--mut);font-weight:600}
+label{display:block;font-size:13px;color:var(--mut);margin:14px 0 6px}
+input,textarea,select{width:100%;background:#0d0d18;color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:11px 13px;font:inherit;outline:none;transition:.15s}
+input:focus,textarea:focus,select:focus{border-color:var(--a1);box-shadow:0 0 0 3px #8b5cf62e}
+textarea{resize:vertical;min-height:120px;font-family:inherit}
+#lyrics{min-height:260px;font-family:Consolas,"Cascadia Mono",monospace;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.chip{border:1px solid var(--line);background:#ffffff08;color:var(--txt);padding:5px 11px;border-radius:99px;font-size:12.5px;cursor:pointer;transition:.15s;user-select:none}
+.chip:hover{border-color:var(--a1);background:#8b5cf620}
+.chip.tag{color:var(--a3);border-color:#22d3ee44}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:11px 18px;color:#fff;transition:.15s}
+.go{width:100%;margin-top:18px;padding:15px;font-size:16px;font-weight:600;background:linear-gradient(90deg,var(--a1),var(--a2));box-shadow:0 8px 30px #8b5cf655}
+.go:hover{transform:translateY(-1px);filter:brightness(1.1)}
+.go:disabled{filter:grayscale(.8) brightness(.6);cursor:not-allowed;transform:none;box-shadow:none}
+.ghost{background:#ffffff0d;border:1px solid var(--line);color:var(--txt);padding:7px 12px;font-size:13px}
+.ghost:hover{border-color:var(--a1)}
+.danger:hover{border-color:var(--err);color:var(--err)}
+details{margin-top:16px;border:1px solid var(--line);border-radius:12px;padding:4px 14px;background:#ffffff05}
+summary{cursor:pointer;padding:10px 0;color:var(--mut);font-size:14px}
+.sw{display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--txt);font-size:14px;cursor:pointer}
+.sw input{width:18px;height:18px;accent-color:var(--a1)}
+.hint{font-size:12.5px;color:var(--mut);margin-top:4px}
+.banner{border:1px solid #fbbf2455;background:#fbbf2410;border-radius:14px;padding:16px;margin-bottom:16px}
+.banner b{color:var(--warn)}
+.bar{height:8px;background:#ffffff10;border-radius:99px;overflow:hidden;margin:12px 0}
+.bar i{display:block;height:100%;width:35%;background:linear-gradient(90deg,var(--a1),var(--a2),var(--a3));border-radius:99px;animation:slide 1.4s infinite ease-in-out}
+@keyframes slide{0%{transform:translateX(-100%)}100%{transform:translateX(290%)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.log{background:#07070d;border:1px solid var(--line);border-radius:12px;padding:12px;height:190px;overflow:auto;font:12px/1.5 Consolas,monospace;color:#b8b6d6;white-space:pre-wrap;word-break:break-word}
+.stage{font-size:14px;color:var(--a3);min-height:22px;word-break:break-word}
+.song{border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px;background:#ffffff05}
+.song:hover{border-color:#8b5cf666}
+.song h3{margin:0;font-size:16px;display:flex;gap:8px;align-items:center}
+.song .meta{font-size:12.5px;color:var(--mut);margin:3px 0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.song audio{width:100%;height:40px;margin-bottom:10px}
+.acts{display:flex;flex-wrap:wrap;gap:7px}
+.new{animation:pop .8s ease}
+@keyframes pop{0%{box-shadow:0 0 0 0 #8b5cf6aa}100%{box-shadow:0 0 0 18px #8b5cf600}}
+.empty{color:var(--mut);text-align:center;padding:30px 0}
+.modal{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal.on{display:flex}
+.modal .box{background:var(--panel-solid);border:1px solid var(--line);border-radius:16px;max-width:760px;width:100%;max-height:85vh;display:flex;flex-direction:column;padding:20px}
+.modal pre{overflow:auto;background:#07070d;border-radius:12px;padding:14px;font:13px/1.5 Consolas,monospace;flex:1;white-space:pre-wrap}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1d1d2e;border:1px solid var(--line);padding:12px 20px;border-radius:12px;z-index:60;display:none;max-width:90vw}
+.toast.on{display:block}.toast.err{border-color:var(--err);color:var(--err)}
+.tips{font-size:13px;color:var(--mut);line-height:1.7}
+.tips code{background:#ffffff10;padding:1px 6px;border-radius:6px;color:var(--txt)}
+
+.dlbar{height:10px;background:#ffffff14;border-radius:99px;overflow:hidden;margin:12px 0 6px}
+.dlbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a1),var(--a2),var(--a3));border-radius:99px;transition:width .6s}
+footer{text-align:center;color:var(--mut);font-size:12.5px;padding:0 20px 40px}
+footer a{color:var(--a3);text-decoration:none}
+</style>
+</head>
+<body>
+<header>
+  <img src="/static/logo.svg" alt="">
+  <h1><span>Vitus</span>Songs</h1>
+  <div class="sp"></div>
+  <div class="pill" id="gpuPill"><i class="dot"></i><span>Checking GPU…</span></div>
+  <div class="pill" id="modelPill"><i class="dot"></i><span>Models…</span></div>
+</header>
+
+<main>
+<section>
+  <div id="gpuWarn" class="banner" style="display:none"></div>
+  <div id="setup" class="banner" style="display:none">
+    <b>Models need to be downloaded</b> (about 8–10 GB, one time). They are saved to the <code>models</code> folder and work offline afterwards.
+    <div class="dlbar" id="dlBarWrap" style="display:none"><i id="dlBar"></i></div>
+    <div class="hint" id="dlInfo"></div>
+    <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="go" style="width:auto;margin:0;padding:10px 18px;font-size:14px" id="dlBtn">⬇ Download models</button>
+      <button class="ghost danger" id="dlCancel" style="display:none">✖ Cancel</button>
+    </div>
+    <div class="hint" id="dlErr" style="color:var(--err);margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <h2>New song</h2>
+    <label for="title">Title</label>
+    <input id="title" placeholder="e.g. City Lights" maxlength="60">
+
+    <label for="style">Style — genre, instruments, voice, language, tempo</label>
+    <textarea id="style" style="min-height:84px" placeholder="English, warm piano pop, expressive female voice, acoustic piano, light drums, 88 BPM"></textarea>
+    <div class="chips" id="styleChips"></div>
+
+    <label for="lyrics">Lyrics</label>
+    <textarea id="lyrics" placeholder="[Verse]&#10;First line of the verse&#10;Second line of the verse&#10;&#10;[Chorus]&#10;Chorus lines"></textarea>
+    <div class="chips">
+      <span class="chip tag" data-tag="[Verse]">+ Verse</span>
+      <span class="chip tag" data-tag="[Pre-Chorus]">+ Pre-chorus</span>
+      <span class="chip tag" data-tag="[Chorus]">+ Chorus</span>
+      <span class="chip tag" data-tag="[Bridge]">+ Bridge</span>
+      <span class="chip tag" data-tag="[Outro]">+ Outro</span>
+      <span class="chip" id="exampleBtn">✨ Example</span>
+    </div>
+
+    <details>
+      <summary>Advanced</summary>
+      <div class="row">
+        <div>
+          <label for="cot">Composition mode</label>
+          <select id="cot">
+            <option value="full">full — melody + chords (best quality)</option>
+            <option value="melody">melody — melody only</option>
+            <option value="off">off — no score plan</option>
+          </select>
+        </div>
+        <div>
+          <label for="seed">Seed (empty = random)</label>
+          <div style="display:flex;gap:8px"><input id="seed" placeholder="random" inputmode="numeric"><button class="ghost" id="dice" type="button" title="Random number">🎲</button></div>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="maxTokens">Song length limit</label>
+          <select id="maxTokens">
+            <option value="9000">Up to ~6:00 (default)</option>
+            <option value="6000">Up to ~4:00</option>
+            <option value="4500">Up to ~3:00</option>
+            <option value="3000">Up to ~2:00 (faster, less memory)</option>
+            <option value="1500">Up to ~1:00 (quick test)</option>
+          </select>
+        </div>
+        <div>
+          <label for="quality">Audio quality</label>
+          <select id="quality">
+            <option value="standard">Standard (32 steps)</option>
+            <option value="fast">Faster (16 steps)</option>
+            <option value="draft">Draft (8 steps)</option>
+          </select>
+        </div>
+      </div>
+      <div class="hint">The length limit is a cap: the model ends the song by itself when the lyrics are done, but cuts it off if the cap is reached first. On weak PCs a shorter cap and faster quality save a lot of time.</div>
+      <div class="row">
+        <div>
+          <label for="lowvram">Low-VRAM mode</label>
+          <select id="lowvram"><option value="auto">Auto (on for GPUs under 11 GB)</option><option value="on">Always on</option><option value="off">Off</option></select>
+        </div>
+        <div></div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="cfg">CFG scale (empty = default)</label>
+          <input id="cfg" placeholder="1.0" inputmode="decimal">
+        </div>
+        <div>
+          <label for="budget">VRAM budget, GB</label>
+          <input id="budget" type="number" min="6" max="96" step="1" value="24">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="device">Device</label>
+          <select id="device"><option value="auto">Auto (GPU if available)</option><option value="cpu">CPU only</option></select>
+        </div>
+        <div>
+          <label for="kernel">Kernel mode</label>
+          <select id="kernel"><option value="auto">Auto</option><option value="eager">eager — compatible (AMD)</option><option value="graph">CUDA graph — fast (NVIDIA)</option></select>
+        </div>
+      </div>
+      <div class="hint">For cards with less memory: lower the budget (e.g. 16 or 12) and enable the options below. This will not make generation faster, but helps avoid out-of-memory errors.</div>
+      <label class="sw" id="offrow"><input type="checkbox" id="offload"> Offload AR model to system RAM (saves VRAM, slower)</label>
+      <label class="sw" id="fp8row"><input type="checkbox" id="fp8"> FP8 quantization (experimental, RTX 40/50 only)</label>
+      <label for="abc">Your own melody in ABC notation (optional)</label>
+      <textarea id="abc" style="min-height:100px;font-family:Consolas,monospace;font-size:13px" placeholder="Paste ABC notation or load a file"></textarea>
+      <div style="margin:8px 0 12px"><input type="file" id="abcFile" accept=".abc,.txt" style="display:none"><button class="ghost" id="abcBtn" type="button">📂 Load .abc</button> <button class="ghost" id="abcEx" type="button">Sample melody</button></div>
+      <div class="row" style="align-items:end;margin-bottom:12px">
+        <div><label for="abcBpm" style="margin-top:0">Score tempo (BPM) <span id="abcBpmNow" class="hint"></span></label><input id="abcBpm" type="number" min="30" max="260" placeholder="e.g. 96"></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="ghost" id="abcSet" type="button">Apply</button><button class="ghost" id="abcSlow" type="button">−10%</button><button class="ghost" id="abcFast" type="button">+10%</button></div>
+      </div>
+    </details>
+
+    <button class="go" id="goBtn">🎵 Create song</button>
+    <button class="ghost" id="planBtn" style="width:100%;margin-top:10px;padding:11px" title="Generates only the melody/chord score (ABC) so you can edit it before the full render">👁 Preview score only (faster) — then edit the notes</button>
+    <div class="hint" style="text-align:center;margin-top:8px">Generation takes a few minutes on a fast GPU and much longer on slower hardware.</div>
+  </div>
+</section>
+
+<section>
+  <div class="card" id="jobCard" style="display:none;margin-bottom:24px">
+    <h2 id="jobTitle">Generating</h2>
+    <div class="stage" id="stage"></div>
+    <div class="bar" id="bar"><i></i></div>
+    <div class="hint" id="elapsed"></div>
+    <div class="log" id="log" style="margin-top:10px"></div>
+    <div style="margin-top:12px"><button class="ghost danger" id="cancelBtn">✖ Cancel</button></div>
+  </div>
+
+  <div class="card">
+    <h2 style="display:flex;align-items:center">My library <span class="sp"></span>
+      <button class="ghost" id="openAll">📁 Folder</button></h2>
+    <div id="lib"><div class="empty">Nothing here yet. Create your first song on the left.</div></div>
+  </div>
+
+  <div class="card" id="modCard" style="margin-top:24px">
+    <h2>Song modifier</h2>
+    <div class="hint" style="margin:0 0 12px">Edit any song: upload an MP3 / WAV / FLAC / OGG, or press “🎚 Modify” on a song in your library. The result is saved as a new song, so the original stays untouched.</div>
+    <input type="file" id="modFile" accept="audio/*,.mp3,.wav,.flac,.ogg" style="display:none">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="ghost" id="modPick">📂 Upload a song</button><span class="hint" id="modName">No song selected</span></div>
+    <canvas id="wave" style="width:100%;height:84px;margin-top:12px;border:1px solid var(--line);border-radius:12px;background:#07070d;display:none"></canvas>
+    <div id="modCtl"></div>
+    <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:6px">
+      <label class="sw"><input type="checkbox" id="mNorm"> Normalize loudness</label>
+      <label class="sw"><input type="checkbox" id="mRev"> Reverse</label>
+      <label class="sw"><input type="checkbox" id="mMono"> Mono</label>
+    </div>
+    <label for="mTitle">Title of the edited song</label>
+    <input id="mTitle" placeholder="(auto) song name (edited)" maxlength="60">
+    <div style="display:flex;gap:10px;margin-top:14px"><button class="go" style="margin:0" id="mApply" disabled>🎚 Apply &amp; save to library</button><button class="ghost" id="mReset">Reset</button></div>
+    <div class="hint" id="modMsg" style="margin-top:8px"></div>
+    <div class="hint" style="margin-top:8px">Tempo and pitch are applied without re-composing the music. To change melody, chords or lyrics, use “✎ Edit score” on a library song — YuE2 re-renders it as a new song.</div>
+  </div>
+
+  <div class="card" style="margin-top:24px">
+    <h2>Tips</h2>
+    <div class="tips">
+      • In <b>Style</b>, name the language (<code>English</code>, <code>Mandarin</code>…), genre, instruments, vocal type and tempo.<br>
+      • In <b>Lyrics</b>, use section tags: <code>[Verse]</code>, <code>[Chorus]</code>…<br>
+      • One run = one version. Want a different take? Change the seed.<br>
+      • Songs are saved in the <code>outputs</code> folder as 48 kHz stereo FLAC.
+    </div>
+  </div>
+</section>
+</main>
+<footer>VitusSongs runs locally on your computer. Music generation powered by the open-source <a href="https://github.com/multimodal-art-projection/YuE" target="_blank" rel="noopener">YuE2</a> model.</footer>
+
+<div class="modal" id="modal"><div class="box"><div style="display:flex;align-items:center;margin-bottom:10px"><b id="mTitle"></b><span class="sp"></span><button class="ghost" id="mClose">Close</button></div><pre id="mBody"></pre></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const STYLES=[
+ ["Pop","English, warm piano pop, expressive female voice, acoustic piano, rounded bass and light drums, lyrical memorable melody, 90 BPM"],
+ ["Rock","English, energetic rock, male vocal, distorted electric guitars, driving drums, anthemic chorus, 128 BPM"],
+ ["Hip-hop","English, hip hop, confident male rap vocal, trap drums, deep 808 bass, dark synth pads, 140 BPM"],
+ ["Electronic","English, synthwave, dreamy female vocal, analog synths, pulsing bass, retro drum machine, 110 BPM"],
+ ["Jazz","English, smooth jazz ballad, soulful female vocal, upright bass, brushed drums, piano, warm and intimate, 76 BPM"],
+ ["Acoustic","English, indie folk, gentle male vocal, fingerpicked acoustic guitar, soft strings, intimate and sincere, 84 BPM"],
+ ["Mandarin pop","Mandarin, warm piano, acoustic pop, female vocal, gentle strings, 80 BPM"],
+ ["Ballad","English, cinematic power ballad, emotional female vocal, grand piano, orchestral strings, big drums in the chorus, 72 BPM"]
+];
+const EXAMPLE={title:"City Lights",style:STYLES[0][1],lyrics:"[Verse]\nNeon fades along the lane\nFootsteps keep the time of rain\nFold the night and leave it here\nMorning has a sky to clear\n\n[Chorus]\nLet the day come into view\nEvery road begins with you\nHold a little room for light\nWe will sing beyond the night"};
+const ABC_EX="X:1\nT:Example\nM:4/4\nL:1/8\nQ:1/4=88\nK:C\nV:Vocal\nC2 E2 G2 E2 | F2 A2 c4 | G2 E2 C2 E2 | D8 |\nV:Ins\nC,4 G,4 | F,4 C4 | C,4 G,4 | G,8 |\n";
+
+const chipBox=$("#styleChips");
+STYLES.forEach(([n,t])=>{const c=document.createElement("span");c.className="chip";c.textContent=n;c.onclick=()=>{$("#style").value=t;save("style")};chipBox.appendChild(c)});
+document.querySelectorAll(".chip.tag").forEach(c=>c.onclick=()=>{const t=$("#lyrics");const v=t.value;t.value=(v&&!v.endsWith("\n\n")?v+(v.endsWith("\n")?"\n":"\n\n"):v)+c.dataset.tag+"\n";t.focus();save("lyrics")});
+$("#exampleBtn").onclick=()=>{$("#title").value=EXAMPLE.title;$("#style").value=EXAMPLE.style;$("#lyrics").value=EXAMPLE.lyrics;FIELDS.forEach(save)};
+$("#dice").onclick=()=>{$("#seed").value=Math.floor(Math.random()*2147483646)+1;save("seed")};
+$("#abcBtn").onclick=()=>$("#abcFile").click();
+$("#abcFile").onchange=async e=>{const f=e.target.files[0];if(f){$("#abc").value=await f.text();save("abc")}};
+$("#abcEx").onclick=()=>{$("#abc").value=ABC_EX;save("abc")};
+
+function toast(msg,err){const t=$("#toast");t.textContent=msg;t.className="toast on"+(err?" err":"");clearTimeout(toast.h);toast.h=setTimeout(()=>t.className="toast",5000)}
+async function api(path,body){const r=await fetch(path,body===undefined?{}:{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});return r.json()}
+
+const FIELDS=["title","style","lyrics","cot","seed","cfg","budget","abc","device","kernel","maxTokens","quality","lowvram"];
+function save(id){localStorage.setItem("vs_"+id,$("#"+id).value)}
+FIELDS.forEach(id=>{const v=localStorage.getItem("vs_"+id);if(v!==null)$("#"+id).value=v;$("#"+id).addEventListener("input",()=>save(id))});
+["offload","fp8"].forEach(id=>{$("#"+id).checked=localStorage.getItem("vs_"+id)==="1";$("#"+id).onchange=()=>localStorage.setItem("vs_"+id,$("#"+id).checked?"1":"0")});
+
+let logPos=0,lastJobId=null,firstPoll=true;
+async function startJob(stage){
+  const body={stage,title:$("#title").value,style:$("#style").value,lyrics:$("#lyrics").value,cot:$("#cot").value,seed:$("#seed").value,cfg_scale:$("#cfg").value,budget:$("#budget").value,device:$("#device").value,kernel:$("#kernel").value,max_tokens:$("#maxTokens").value,quality:$("#quality").value,low_vram:$("#lowvram").value,abc:$("#abc").value,offload_ar:$("#offload").checked,fp8:$("#fp8").checked};
+  const r=await api("/api/generate",body);
+  if(r.error){toast(r.error,true);return}
+  logPos=0;$("#log").textContent="";poll();
+}
+$("#goBtn").onclick=()=>startJob();
+$("#planBtn").onclick=()=>startJob("plan");
+$("#cancelBtn").onclick=async()=>{const r=await api("/api/cancel",{});if(r.error)toast(r.error,true)};
+$("#dlBtn").onclick=async()=>{const r=await api("/api/download-models",{});if(r.error)toast(r.error,true);else poll()};
+$("#dlCancel").onclick=async()=>{await api("/api/cancel-download",{});poll()};
+$("#openAll").onclick=()=>api("/api/open-folder",{});
+
+function fmt(s){s=Math.max(0,Math.round(s));const m=Math.floor(s/60);return m+" min "+String(s%60).padStart(2,"0")+" s"}
+const gb=b=>(b/2**30).toFixed(2);
+
+let pollTimer=null,polling=false,pollBusy=false;
+function poll(){clearTimeout(pollTimer);pollLoop()}   // restart the single loop immediately
+async function pollLoop(){if(polling)return;polling=true;try{await pollOnce()}catch(e){pollBusy=false}polling=false;
+  clearTimeout(pollTimer);pollTimer=setTimeout(pollLoop,document.hidden?8000:pollBusy?1500:4000)}
+async function pollOnce(){
+  let st;try{st=await api("/api/status")}catch(e){pollBusy=false;return}
+  const g=st.gpu;
+  const isGpu=g.backend==="cuda"||g.backend==="rocm";
+  $("#gpuPill").innerHTML=g.pending?`<i class="dot warn"></i><span>Checking GPU…</span>`:isGpu?`<i class="dot ok"></i><span>${g.name} · ${g.total_gib} GB · ${g.backend==="rocm"?"AMD ROCm":"CUDA"}</span>`:g.backend==="cpu"?`<i class="dot warn"></i><span>CPU only (slow)</span>`:`<i class="dot err"></i><span>PyTorch not ready</span>`;
+  $("#fp8row").style.display=g.backend==="cuda"?"flex":"none";
+  const gw=$("#gpuWarn");
+  if(!poll.tuned&&(isGpu&&g.total_gib<11||g.backend==="cpu")){poll.tuned=true;  // sensible first-run defaults for weak PCs
+    if(localStorage.getItem("vs_maxTokens")===null){$("#maxTokens").value="4500"}
+    if(localStorage.getItem("vs_quality")===null){$("#quality").value="fast"}}
+  const ram=g.ram_gib;
+  const lowRam=ram&&ram<15;
+  if(g.backend==="cpu"){gw.style.display="block";gw.innerHTML="<b>CPU mode.</b> No GPU accelerator was found for PyTorch, so one song can take many hours and needs about 16–32 GB of RAM"+(ram?" (this PC has "+ram+" GB)":"")+". Tip: choose a shorter length limit and “Faster” quality in Advanced. For AMD RX 6000/7000/9000 cards, run <code>install.bat</code> again."}
+  else if(isGpu&&g.total_gib<11){gw.style.display="block";gw.innerHTML="<b>Low-VRAM mode is active ("+g.total_gib+" GB card).</b> VitusSongs keeps only the half of the model that the current step needs on the GPU, so it fits — but generation is slower. Close games and other GPU apps first, and keep at least 16 GB of system RAM free"+(lowRam?" (<b>this PC has only "+ram+" GB — expect swapping; consider increasing the Windows page file</b>)":"")+"."}
+  else gw.style.display="none";
+  $("#offrow").style.display=(isGpu&&g.total_gib<11)?"none":"flex";
+  const mr=st.models.model&&st.models.vae;
+  $("#modelPill").innerHTML=mr?`<i class="dot ok"></i><span>Models ready</span>`:`<i class="dot warn"></i><span>Models not downloaded</span>`;
+  $("#setup").style.display=mr?"none":"block";
+  const d=st.dl||{},dling=st.downloading;
+  $("#dlBtn").disabled=dling;$("#dlBtn").textContent=dling?"⏳ Downloading…":(d.bytes>0?"⬇ Resume download":"⬇ Download models");
+  $("#dlCancel").style.display=dling?"inline-block":"none";
+  $("#dlBarWrap").style.display=(dling||d.bytes>0)&&d.total?"block":"none";
+  if(d.total){$("#dlBar").style.width=Math.min(100,d.bytes/d.total*100).toFixed(1)+"%"}
+  let info="";
+  if(dling){
+    info=d.step||"";
+    if(d.total&&d.bytes){const left=d.speed>1e5?(d.total-d.bytes)/d.speed:null;
+      info=`${d.step?d.step+" — ":""}${gb(d.bytes)} / ${gb(d.total)} GB (${Math.min(100,d.bytes/d.total*100).toFixed(1)}%)`+(d.speed>1e4?` · ${(d.speed/2**20).toFixed(1)} MB/s`:"")+(left?` · ~${fmt(left)} left`:"")}
+    else if(d.total){info=(d.step||"Starting")+" — preparing files, progress appears shortly…"}
+  }
+  $("#dlInfo").textContent=info;
+  $("#dlErr").textContent=!dling&&d.error?d.error:"";
+  const job=st.job,running=job&&job.status==="running";
+  $("#goBtn").disabled=running||dling||!mr||g.pending||st.editing;$("#planBtn").disabled=$("#goBtn").disabled;
+  $("#goBtn").textContent=!mr?"Download the models first":running?"⏳ Generating…":"🎵 Create song";
+  const card=$("#jobCard");
+  if(job&&(running||job.id!==lastJobId||job.status!=="done")){
+    card.style.display="block";
+    $("#jobTitle").textContent=(running?"Generating: ":job.status==="done"?"Done: ":job.status==="cancelled"?"Cancelled: ":"Error: ")+job.title;
+    $("#stage").style.color=job.status==="failed"?"var(--err)":job.status==="done"?"var(--ok)":"var(--a3)";
+    $("#stage").textContent=job.status==="failed"?(job.error||"Error"):job.stage;
+    $("#bar").style.display=running?"block":"none";
+    $("#cancelBtn").style.display=running?"inline-block":"none";
+    $("#elapsed").textContent=running?"Elapsed: "+fmt(st.now-job.started):job.finished?"Took: "+fmt(job.finished-job.started):"";
+    const lg=await api("/api/log?since="+logPos);
+    if(lg.lines.length){const el=$("#log");el.textContent+=lg.lines.join("\n")+"\n";if(el.textContent.length>60000)el.textContent=el.textContent.slice(-40000);el.scrollTop=el.scrollHeight;logPos=lg.next}
+  }else if(!job){card.style.display="none"}
+  if(job&&job.status==="done"&&job.id!==lastJobId){const fresh=!firstPoll;lastJobId=job.id;
+    if(job.kind==="plan"){if(fresh){const r=await fetch("/files/"+encodeURIComponent(job.id)+"/score.abc");$("#abc").value=await r.text();save("abc");document.querySelector("details").open=true;if($("#cot").value==="off"){$("#cot").value="full";save("cot")}toast("Score ready in Advanced → ABC. Edit the notes or tempo, then press Create song.")}}
+    else{await loadLib(fresh?job.id:undefined);if(fresh)toast("Your song is ready! 🎉")}}
+  firstPoll=false;
+  pollBusy=!!(running||dling||st.editing);
+}
+
+let libSig="",libBusy=false;
+async function exportSong(it,fmt){
+  toast(fmt==="flac"?"Starting download…":"Preparing "+fmt.toUpperCase()+" file…");
+  let r;try{r=await api("/api/prepare-export",{id:it.id,fmt})}catch(e){toast("Export failed: "+e,true);return}
+  if(r.error){toast(r.error,true);return}
+  const a=document.createElement("a");a.href=r.url;a.download="";document.body.appendChild(a);a.click();a.remove()}
+async function loadLib(newId){
+  if(libBusy)return;libBusy=true;try{await loadLibInner(newId)}finally{libBusy=false}}
+async function loadLibInner(newId){
+  const items=await api("/api/library");const box=$("#lib");
+  const sig=JSON.stringify(items);if(sig===libSig&&!newId)return;libSig=sig;
+  if(!items.length){box.innerHTML='<div class="empty">Nothing here yet. Create your first song on the left.</div>';return}
+  box.innerHTML="";
+  items.forEach(it=>{
+    const d=document.createElement("div");d.className="song"+(it.id===newId?" new":"");
+    const when=new Date((it.created||0)*1000).toLocaleString("en-GB");
+    d.innerHTML=`<h3></h3><div class="meta"></div><audio controls preload="none" src="/files/${encodeURIComponent(it.id)}/audio.flac"></audio><div class="acts"></div>`;
+    d.querySelector("h3").textContent="🎵 "+it.title;
+    d.querySelector(".meta").textContent=`${when} · ${it.size_mb} MB${it.seconds?" · "+fmt(it.seconds):""}${it.seed?" · seed "+it.seed:""}`;
+    d.querySelector(".meta").title=it.style||"";
+    const a=d.querySelector(".acts");
+    const btn=(t,fn,cls="")=>{const b=document.createElement("button");b.className="ghost "+cls;b.textContent=t;b.onclick=fn;a.appendChild(b)};
+    const dl=ext=>()=>exportSong(it,ext);
+    btn("⬇ MP3",dl("mp3"));btn("⬇ WAV",dl("wav"));btn("⬇ FLAC",dl("flac"));
+    btn("🎚 Modify",()=>openModifier(it));
+    if(it.has_score&&it.lyrics)btn("✎ Edit score",async()=>{const r=await fetch(`/files/${encodeURIComponent(it.id)}/score.abc`);$("#title").value=it.title+" v2";$("#style").value=it.style||"";$("#lyrics").value=it.lyrics||"";$("#abc").value=await r.text();$("#cot").value="full";$("#seed").value="";FIELDS.forEach(save);document.querySelector("details").open=true;window.scrollTo({top:0,behavior:"smooth"});toast("Score loaded. Edit the ABC notes or tempo in Advanced, then press Create song.")});
+    btn("📁 Folder",()=>api("/api/open-folder",{id:it.id}));
+    if(it.lyrics)btn("↺ Use as template",()=>{$("#title").value=it.title;$("#style").value=it.style||"";$("#lyrics").value=it.lyrics||"";$("#seed").value="";FIELDS.forEach(save);window.scrollTo({top:0,behavior:"smooth"})});
+    if(it.has_score)btn("🎼 Score",async()=>{const r=await fetch(`/files/${encodeURIComponent(it.id)}/score.abc`);$("#mTitle").textContent="Score (ABC) — "+it.title;$("#mBody").textContent=await r.text();$("#modal").classList.add("on")});
+    btn("✎ Rename",async()=>{const t=prompt("New title",it.title);if(t){await api("/api/rename",{id:it.id,title:t});loadLib()}});
+    btn("🗑 Delete",async()=>{if(confirm("Delete “"+it.title+"” permanently?")){await api("/api/delete",{id:it.id});loadLib()}},"danger");
+    box.appendChild(d);
+  });
+}
+$("#mClose").onclick=()=>$("#modal").classList.remove("on");
+$("#modal").onclick=e=>{if(e.target.id==="modal")$("#modal").classList.remove("on")};
+
+// ---------- ABC tempo tools
+function abcTempo(t){const m=t.match(/^Q:.*?(\d+)\s*$/m);return m?parseInt(m[1]):null}
+function setAbcTempo(bpm){let t=$("#abc").value;if(!t.trim()){toast("Load or generate an ABC score first.",true);return}
+  bpm=Math.max(30,Math.min(260,Math.round(bpm)));
+  if(/^Q:.*$/m.test(t))t=t.replace(/^Q:.*$/m,"Q:1/4="+bpm);else if(/^K:.*$/m.test(t))t=t.replace(/^K:.*$/m,"Q:1/4="+bpm+"\n$&");else t="Q:1/4="+bpm+"\n"+t;
+  $("#abc").value=t;save("abc");showBpm()}
+function showBpm(){const b=abcTempo($("#abc").value);$("#abcBpmNow").textContent=b?"(now "+b+")":"";if(b&&!$("#abcBpm").value)$("#abcBpm").placeholder=b}
+$("#abc").addEventListener("input",showBpm);
+$("#abcSet").onclick=()=>{const v=parseFloat($("#abcBpm").value);if(v)setAbcTempo(v);else toast("Enter a BPM number.",true)};
+$("#abcSlow").onclick=()=>{const b=abcTempo($("#abc").value);if(b)setAbcTempo(b*0.9);else toast("No tempo (Q:) found in the score.",true)};
+$("#abcFast").onclick=()=>{const b=abcTempo($("#abc").value);if(b)setAbcTempo(b*1.1);else toast("No tempo (Q:) found in the score.",true)};
+showBpm();
+
+// ---------- Song modifier
+let mod=null,peaks=null,modDur=0;  // declared before first use (drawWave is called while the controls are built)
+const MCTL=[["mStart","Trim start (s)","number",0,null,0.1,0,""],["mEnd","Trim end (s, 0 = to the end)","number",0,null,0.1,0,""],
+ ["mTempo","Tempo","range",0.5,2,0.01,1,"×"],["mPitch","Pitch","range",-12,12,1,0," st"],
+ ["mBass","Bass","range",-12,12,1,0," dB"],["mTreble","Treble","range",-12,12,1,0," dB"],
+ ["mLow","Low-cut (Hz, 0 = off)","number",0,2000,10,0,""],["mHigh","High-cut (Hz, 0 = off)","number",0,20000,100,0,""],
+ ["mGain","Volume","range",-20,20,1,0," dB"],["mFi","Fade in (s)","number",0,30,0.5,0,""],["mFo","Fade out (s)","number",0,30,0.5,0,""]];
+(function(){const box=$("#modCtl");let row;MCTL.forEach(([id,label,type,min,max,step,def,unit],i)=>{
+  if(i%2===0){row=document.createElement("div");row.className="row";box.appendChild(row)}
+  const d=document.createElement("div");
+  d.innerHTML=`<label for="${id}">${label}<span class="hint" id="${id}V" style="margin-left:8px"></span></label><input id="${id}" type="${type}" ${min!==null?`min="${min}"`:""} ${max!==null?`max="${max}"`:""} step="${step}" value="${def}" ${type==="range"?'style="padding:0;accent-color:var(--a1)"':""}>`;
+  row.appendChild(d);const inp=d.querySelector("input");
+  const upd=()=>{if(type==="range")d.querySelector(".hint").textContent=(inp.value>0&&id!=="mTempo"?"+":"")+inp.value+unit;if(id==="mStart"||id==="mEnd")drawWave()};
+  inp.addEventListener("input",upd);upd()})})();
+function drawWave(){const c=$("#wave");if(!peaks){c.style.display="none";return}
+  c.style.display="block";const dpr=window.devicePixelRatio||1,w=c.clientWidth*dpr,h=c.clientHeight*dpr;c.width=w;c.height=h;
+  const g=c.getContext("2d");g.clearRect(0,0,w,h);const n=peaks.length,bw=w/n;
+  const a=Math.max(0,parseFloat($("#mStart").value)||0),b=parseFloat($("#mEnd").value)||modDur;
+  for(let i=0;i<n;i++){const t=i/n*modDur,on=t>=a&&t<=b;g.fillStyle=on?"#8b5cf6":"#3a3a55";const ph=Math.max(1,peaks[i]*h*0.9);g.fillRect(i*bw,(h-ph)/2,Math.max(1,bw-1),ph)}}
+async function loadPeaks(query){try{const r=await api("/api/peaks?"+query);if(r.error)throw new Error(r.error);peaks=r.peaks;modDur=r.duration}catch(e){peaks=null}drawWave()}
+function uploadFile(f,onprog){return new Promise((res,rej)=>{const x=new XMLHttpRequest();x.open("POST","/api/upload?name="+encodeURIComponent(f.name));
+  x.upload.onprogress=e=>{if(e.lengthComputable)onprog(e.loaded/e.total)};
+  x.onload=()=>{try{res(JSON.parse(x.responseText))}catch(e){rej(new Error("Unexpected server response"))}};
+  x.onerror=()=>rej(new Error("Network error — is VitusSongs still running?"));x.send(f)})}
+function modReady(name){resetMod();$("#modName").textContent=name;$("#mApply").disabled=false;$("#modMsg").textContent="";
+  $("#mTitle").value="";$("#mTitle").placeholder=name.replace(/ ·.*$/,"").replace(/ \(from library\)$/,"")+" (edited)"}
+$("#modPick").onclick=()=>$("#modFile").click();
+$("#modFile").onchange=async e=>{const f=e.target.files[0];e.target.value="";if(!f)return;
+  if(f.size>600*1024*1024){toast("File is larger than 600 MB.",true);return}
+  $("#mApply").disabled=true;
+  try{const r=await uploadFile(f,p=>{$("#modName").textContent="Uploading "+f.name+" … "+Math.round(p*100)+"%"});
+    if(r.error){toast(r.error,true);$("#modName").textContent=mod?mod.name:"No song selected";$("#mApply").disabled=!mod;return}
+    mod={type:"upload",token:r.token,name:f.name};modDur=r.duration;
+    modReady(f.name+" · "+Math.round(r.duration)+" s · "+r.samplerate+" Hz");loadPeaks("token="+r.token)}
+  catch(err){toast("Upload failed: "+err.message,true);$("#modName").textContent=mod?mod.name:"No song selected";$("#mApply").disabled=!mod}};
+async function openModifier(it){mod={type:"song",id:it.id,name:it.title};modReady(it.title+" (from library)");$("#modCard").scrollIntoView({behavior:"smooth"});
+  loadPeaks("id="+encodeURIComponent(it.id))}
+function resetMod(){MCTL.forEach(([id,,type,,,,def])=>{const i=$("#"+id);i.value=def;i.dispatchEvent(new Event("input"))});["mNorm","mRev","mMono"].forEach(i=>$("#"+i).checked=false)}
+$("#mReset").onclick=resetMod;
+$("#mApply").onclick=async()=>{if(!mod)return;const num=id=>parseFloat($("#"+id).value)||0;
+  const ops={trim_start:num("mStart"),trim_end:num("mEnd"),tempo:num("mTempo")||1,pitch:num("mPitch"),bass_db:num("mBass"),treble_db:num("mTreble"),lowcut:num("mLow"),highcut:num("mHigh"),gain_db:num("mGain"),fade_in:num("mFi"),fade_out:num("mFo"),normalize:$("#mNorm").checked,reverse:$("#mRev").checked,mono:$("#mMono").checked};
+  $("#mApply").disabled=true;$("#mApply").textContent="⏳ Processing…";$("#modMsg").textContent="Editing may take up to a minute for long songs.";
+  try{const r=await api("/api/edit",{source:mod,title:$("#mTitle").value,ops});
+    if(r.error)toast(r.error,true);else{toast("Saved to your library ✔"+(r.notes&&r.notes.length?" — "+r.notes.join(" "):""));await loadLib(r.id)}}
+  catch(e){toast("Editing failed: "+e,true)}
+  $("#mApply").disabled=false;$("#mApply").textContent="🎚 Apply & save to library";$("#modMsg").textContent=""};
+window.addEventListener("resize",drawWave);
+setInterval(()=>fetch("/api/ping").catch(()=>{}),5000);
+window.addEventListener("pagehide",()=>navigator.sendBeacon("/api/bye"));
+loadLib();poll();
+</script>
+</body>
+</html>
