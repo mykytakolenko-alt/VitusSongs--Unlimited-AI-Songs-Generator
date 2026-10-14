@@ -1,8 +1,8 @@
 # 🎵 VitusSongs
 
-**Generate unlimited AI songs locally on your Windows PC — no subscriptions, no cloud, no limits.**
+**Generate unlimited AI songs locally on your Windows PC - no subscriptions, no cloud, no limits.**
 
-[![![Version](https://img.shields.io/badge/version-0.1.6-blue)](https://github.com/mykytakolenko-alt/VitusSongs-AI-Songs-Generator/releases)
+[![![Version](https://img.shields.io/badge/version-0.1.6-blue)](https://github.com/mykytakolenko-alt/VitusSongs--Unlimited-AI-Songs-Generator)
 [![Code License](https://img.shields.io/badge/Code%20License-Apache--2.0-green)](LICENSE)
 [![Model License](https://img.shields.io/badge/Model%20Weights-CC%20BY--NC%204.0-orange)](MODEL_LICENSE)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-yellow)](https://www.python.org/downloads/)
@@ -75,7 +75,9 @@ It turns style tags and lyrics into full 48 kHz stereo FLAC audio files — runn
 ## 🚀 Installation & Usage
 
 ### 1. Installation
+-Run the `.exe` file.
 
+> **Manual Installation**:
 1. Unzip the project release into a path **WITHOUT spaces or non-English characters** (e.g., `C:\VitusSongs`). Delete any old `.venv` folders if upgrading.
 2. Run `install.bat`.
    - Automatically detects or installs Python 3.12 via `winget`.
