@@ -16,7 +16,7 @@
 
 It turns style tags and lyrics into full 48 kHz stereo FLAC audio files — running **100% locally** on your computer. Once the models are downloaded, no internet connection is required.
 
-https://github.com/mykytakolenko-alt/VitusSongs--Unlimited-AI-Songs-Generator/blob/main/12.png?raw=true
+Download .exe https://github.com/mykytakolenko-alt/VitusSongs--Unlimited-AI-Songs-Generator/releases/tag/v0.1.6
 
 ---
 
