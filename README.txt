@@ -16,7 +16,8 @@
 
 It turns style tags and lyrics into full 48 kHz stereo FLAC audio files — running **100% locally** on your computer. Once the models are downloaded, no internet connection is required.
 
-<img width="2513" height="1307" alt="image" src="https://github.com/user-attachments/assets/b4a9dd2a-2d77-4398-833e-4bc7237f4c54" 
+![Screenshot](./12.png)
+![Screenshot](./13.png)
 
 ---
 
