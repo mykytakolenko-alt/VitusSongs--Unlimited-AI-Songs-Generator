@@ -35,6 +35,39 @@ Download .exe https://github.com/mykytakolenko-alt/VitusSongs--Unlimited-AI-Song
 
 ---
 
+## 🚀 Installation & Usage
+
+### 1. Installation
+-Download **`VitusSongs-Setup-0.1.6.exe`** from the (https://github.com/mykytakolenko-alt/VitusSongs--Unlimited-AI-Songs-Generator/releases/tag/v0.1.6) page.
+-Run the `.exe` file from releases and follow the setup wizard.
+-Launch the app and download the required models (~8–10 GB) directly inside the user interface.
+
+> **Manual Installation**:
+1. Unzip the project release into a path **WITHOUT spaces or non-English characters** (e.g., `C:\VitusSongs`). Delete any old `.venv` folders if upgrading.
+2. Run `install.bat`.
+   - Automatically detects or installs Python 3.12 via `winget`.
+   - Identifies your GPU architecture and installs matching CUDA or ROCm PyTorch builds.
+   - Creates a **VitusSongs** shortcut on your Desktop.
+3. Download models inside the UI or via `download_models.bat` (~8–10 GB download; supports resume).
+
+> **Manual Target Override**: You can pass custom GPU targets directly:
+> - `install.bat cuda`
+> - `install.bat amd gfx1032` *(RX 6600/6650)* | `gfx1030` *(RX 6800/6900)* | `gfx1100` *(RX 7900)* | `gfx1201` *(RX 9070)*
+> - `install.bat cpu`
+
+### 2. Running the App
+
+- Double-click the **VitusSongs** desktop shortcut (or run `VitusSongs.vbs`).
+- To launch with a diagnostic terminal console, run `start.bat`.
+- To diagnose GPU/PyTorch detection issues, execute `check_system.bat` or `diagnose.bat`.
+
+### 3. Basic Workflow
+
+1. **Style**: Select language, genre, instruments, vocals, and tempo presets.
+2. **Lyrics**: Input text formatted with tags like `[Verse]`, `[Chorus]`, `[Bridge]`.
+3. **Generate**: Click **Create song**. Tracks will appear in **My Library**.
+4. **Edit & Modify**: Trim, shift pitch, tweak EQ, or edit the ABC score to re-render fresh AI variations.
+
 ## 📊 Feature Comparison
 
 | Feature | Official YuE2 | VitusSongs |
@@ -75,38 +108,6 @@ Download .exe https://github.com/mykytakolenko-alt/VitusSongs--Unlimited-AI-Song
 
 ---
 
-## 🚀 Installation & Usage
-
-### 1. Installation
--Download **`VitusSongs-Setup-0.1.6.exe`** from the (https://github.com/mykytakolenko-alt/VitusSongs--Unlimited-AI-Songs-Generator/releases/tag/v0.1.6) page.
--Run the `.exe` file from releases and follow the setup wizard.
--Launch the app and download the required models (~8–10 GB) directly inside the user interface.
-
-> **Manual Installation**:
-1. Unzip the project release into a path **WITHOUT spaces or non-English characters** (e.g., `C:\VitusSongs`). Delete any old `.venv` folders if upgrading.
-2. Run `install.bat`.
-   - Automatically detects or installs Python 3.12 via `winget`.
-   - Identifies your GPU architecture and installs matching CUDA or ROCm PyTorch builds.
-   - Creates a **VitusSongs** shortcut on your Desktop.
-3. Download models inside the UI or via `download_models.bat` (~8–10 GB download; supports resume).
-
-> **Manual Target Override**: You can pass custom GPU targets directly:
-> - `install.bat cuda`
-> - `install.bat amd gfx1032` *(RX 6600/6650)* | `gfx1030` *(RX 6800/6900)* | `gfx1100` *(RX 7900)* | `gfx1201` *(RX 9070)*
-> - `install.bat cpu`
-
-### 2. Running the App
-
-- Double-click the **VitusSongs** desktop shortcut (or run `VitusSongs.vbs`).
-- To launch with a diagnostic terminal console, run `start.bat`.
-- To diagnose GPU/PyTorch detection issues, execute `check_system.bat` or `diagnose.bat`.
-
-### 3. Basic Workflow
-
-1. **Style**: Select language, genre, instruments, vocals, and tempo presets.
-2. **Lyrics**: Input text formatted with tags like `[Verse]`, `[Chorus]`, `[Bridge]`.
-3. **Generate**: Click **Create song**. Tracks will appear in **My Library**.
-4. **Edit & Modify**: Trim, shift pitch, tweak EQ, or edit the ABC score to re-render fresh AI variations.
 
 ---
 
