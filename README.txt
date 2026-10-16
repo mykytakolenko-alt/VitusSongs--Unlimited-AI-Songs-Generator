@@ -22,19 +22,6 @@ Download .exe https://github.com/mykytakolenko-alt/VitusSongs--Unlimited-AI-Song
 
 ---
 
-## ✨ Features
-
-- Polished & Light Web UI — Optimized interface with no heavy blur effects; stays snappy on weak PCs and iGPUs.
-- NVIDIA CUDA Path — Native high-speed generation path for NVIDIA GPUs.
-- AMD ROCm for Windows — Experimental support via ROCm (RX 7000/9000 series and ROCm nightly `gfx103X` builds for RX 6600+).
-- Smart Low-VRAM Mode — Run generation on 8 GB GPUs (e.g., RX 6600, RTX 3060) by automatically splitting the model into an AR half (~4.3 GB) and NAR half (~2.8 GB), streaming weights host-to-GPU on the fly without extra RAM re-allocations.
-- Full DSP Song Modifier — Upload MP3/WAV/FLAC/OGG or edit generated tracks: pitch-preserving tempo shift, pitch correction, low/high-cut filters, EQ, volume, fades, trim, normalize, reverse, and mono conversion.
-- AI Music & Score Editing — Load generated ABC score notation and lyrics to tweak notes or BPM, then re-render a brand-new recording with YuE2.
-- 100% Private & Safe Local Server — Binds strictly to `127.0.0.1/localhost` with Cross-Site Request Forgery (CSRF) protection. Auto-cleans temp files and incomplete generations.
-- Export Options — Download songs in FLAC, WAV, or high-quality VBR MP3 formats.
-
----
-
 ## 🚀 Installation & Usage
 
 ### 1. Installation
@@ -79,6 +66,20 @@ Download .exe https://github.com/mykytakolenko-alt/VitusSongs--Unlimited-AI-Song
 | **Setup Process** | Manual | **One-click `install.bat`** |
 | **Audio DSP Modifier** | ❌ | ✅ **Built-in** |
 | **Score Editing** | ❌ | ✅ **ABC Re-render** |
+
+---
+
+## ✨ Features
+
+- Polished & Light Web UI — Optimized interface with no heavy blur effects; stays snappy on weak PCs and iGPUs.
+- NVIDIA CUDA Path — Native high-speed generation path for NVIDIA GPUs.
+- AMD ROCm for Windows — Experimental support via ROCm (RX 7000/9000 series and ROCm nightly `gfx103X` builds for RX 6600+).
+- Smart Low-VRAM Mode — Run generation on 8 GB GPUs (e.g., RX 6600, RTX 3060) by automatically splitting the model into an AR half (~4.3 GB) and NAR half (~2.8 GB), streaming weights host-to-GPU on the fly without extra RAM re-allocations.
+- Full DSP Song Modifier — Upload MP3/WAV/FLAC/OGG or edit generated tracks: pitch-preserving tempo shift, pitch correction, low/high-cut filters, EQ, volume, fades, trim, normalize, reverse, and mono conversion.
+- AI Music & Score Editing — Load generated ABC score notation and lyrics to tweak notes or BPM, then re-render a brand-new recording with YuE2.
+- 100% Private & Safe Local Server — Binds strictly to `127.0.0.1/localhost` with Cross-Site Request Forgery (CSRF) protection. Auto-cleans temp files and incomplete generations.
+- Export Options — Download songs in FLAC, WAV, or high-quality VBR MP3 formats.
+
 
 ---
 
